@@ -12,6 +12,35 @@ body {
   }
 }
 
+/* 모바일 터치 최적화 */
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    touch-action: manipulation; /* 버튼은 즉시 반응 */
+  }
+
+  /* 버튼 터치 최적화 */
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 입력 필드는 선택 가능하도록 */
+  input,
+  textarea,
+  select {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+    touch-action: manipulation; /* 입력 필드는 스크롤 허용 */
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

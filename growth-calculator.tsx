@@ -1,16 +1,40 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Line, LineChart, XAxis, YAxis, CartesianGrid, ReferenceLine, ResponsiveContainer } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { Calculator, TrendingUp, Users, Ruler } from "lucide-react"
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ReferenceLine,
+  ResponsiveContainer,
+} from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { Calculator, TrendingUp, Users, Ruler } from "lucide-react";
 
 // 성장 데이터 (실제 한국 소아청소년 성장도표 데이터의 근사치)
 const heightPercentiles = {
@@ -50,7 +74,7 @@ const heightPercentiles = {
     17: [137.3, 143.6, 149.9, 156.2, 162.5],
     18: [138.1, 144.4, 150.7, 157.0, 163.3],
   },
-}
+};
 
 const weightPercentiles = {
   male: {
@@ -89,109 +113,116 @@ const weightPercentiles = {
     17: [33.5, 37.6, 42.2, 47.4, 53.2],
     18: [34.7, 39.0, 43.8, 49.3, 55.3],
   },
-}
+};
 
-const percentileLabels = ["3rd", "25th", "50th", "75th", "97th"]
+const percentileLabels = ["3rd", "25th", "50th", "75th", "97th"];
 
 function calculatePercentile(value: number, percentiles: number[]): string {
-  if (value <= percentiles[0]) return "< 3rd"
-  if (value <= percentiles[1]) return "3rd - 25th"
-  if (value <= percentiles[2]) return "25th - 50th"
-  if (value <= percentiles[3]) return "50th - 75th"
-  if (value <= percentiles[4]) return "75th - 97th"
-  return "> 97th"
+  if (value <= percentiles[0]) return "< 3rd";
+  if (value <= percentiles[1]) return "3rd - 25th";
+  if (value <= percentiles[2]) return "25th - 50th";
+  if (value <= percentiles[3]) return "50th - 75th";
+  if (value <= percentiles[4]) return "75th - 97th";
+  return "> 97th";
 }
 
 function getPercentileColor(percentile: string): string {
   switch (percentile) {
     case "< 3rd":
-      return "bg-red-100 text-red-800"
+      return "bg-red-100 text-red-800";
     case "3rd - 25th":
-      return "bg-orange-100 text-orange-800"
+      return "bg-orange-100 text-orange-800";
     case "25th - 50th":
-      return "bg-yellow-100 text-yellow-800"
+      return "bg-yellow-100 text-yellow-800";
     case "50th - 75th":
-      return "bg-green-100 text-green-800"
+      return "bg-green-100 text-green-800";
     case "75th - 97th":
-      return "bg-blue-100 text-blue-800"
+      return "bg-blue-100 text-blue-800";
     case "> 97th":
-      return "bg-purple-100 text-purple-800"
+      return "bg-purple-100 text-purple-800";
     default:
-      return "bg-gray-100 text-gray-800"
+      return "bg-gray-100 text-gray-800";
   }
 }
 
 function generateChartData(gender: string, type: "height" | "weight") {
-  const data = []
-  const percentileData = type === "height" ? heightPercentiles : weightPercentiles
+  const data = [];
+  const percentileData =
+    type === "height" ? heightPercentiles : weightPercentiles;
 
   for (let age = 3; age <= 18; age++) {
-    const ageData: any = { age }
+    const ageData: any = { age };
     const values =
-      percentileData[gender as keyof typeof percentileData][age as keyof (typeof percentileData)[typeof gender]]
+      percentileData[gender as "male" | "female"][
+        age as keyof (typeof percentileData)["male"]
+      ];
 
     if (values) {
-      ageData.p3 = values[0]
-      ageData.p25 = values[1]
-      ageData.p50 = values[2]
-      ageData.p75 = values[3]
-      ageData.p97 = values[4]
+      ageData.p3 = values[0];
+      ageData.p25 = values[1];
+      ageData.p50 = values[2];
+      ageData.p75 = values[3];
+      ageData.p97 = values[4];
     }
 
-    data.push(ageData)
+    data.push(ageData);
   }
 
-  return data
+  return data;
 }
 
 export default function GrowthCalculator() {
-  const [age, setAge] = useState("")
-  const [gender, setGender] = useState("")
-  const [height, setHeight] = useState("")
-  const [weight, setWeight] = useState("")
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState<"male" | "female">("male");
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
   const [results, setResults] = useState<{
-    heightPercentile: string
-    weightPercentile: string
-    bmi: number
-    bmiPercentile: string
-  } | null>(null)
+    heightPercentile: string;
+    weightPercentile: string;
+    bmi: number;
+    bmiPercentile: string;
+  } | null>(null);
 
   const handleCalculate = () => {
-    if (!age || !gender || !height || !weight) return
+    if (!age || !gender || !height || !weight) return;
 
-    const ageNum = Number.parseInt(age)
-    const heightNum = Number.parseFloat(height)
-    const weightNum = Number.parseFloat(weight)
+    const ageNum = Number.parseInt(age);
+    const heightNum = Number.parseFloat(height);
+    const weightNum = Number.parseFloat(weight);
 
-    if (ageNum < 3 || ageNum > 18) return
+    if (ageNum < 3 || ageNum > 18) return;
+
+    // 타입 가드 추가
+    if (gender !== "male" && gender !== "female") return;
 
     const heightData =
       heightPercentiles[gender as keyof typeof heightPercentiles][
         ageNum as keyof (typeof heightPercentiles)[typeof gender]
-      ]
+      ];
     const weightData =
       weightPercentiles[gender as keyof typeof weightPercentiles][
         ageNum as keyof (typeof weightPercentiles)[typeof gender]
-      ]
+      ];
 
-    if (!heightData || !weightData) return
+    if (!heightData || !weightData) return;
 
-    const heightPercentile = calculatePercentile(heightNum, heightData)
-    const weightPercentile = calculatePercentile(weightNum, weightData)
+    const heightPercentile = calculatePercentile(heightNum, heightData);
+    const weightPercentile = calculatePercentile(weightNum, weightData);
 
-    const bmi = weightNum / Math.pow(heightNum / 100, 2)
-    const bmiPercentile = bmi < 18.5 ? "저체중" : bmi < 23 ? "정상" : bmi < 25 ? "과체중" : "비만"
+    const bmi = weightNum / Math.pow(heightNum / 100, 2);
+    const bmiPercentile =
+      bmi < 18.5 ? "저체중" : bmi < 23 ? "정상" : bmi < 25 ? "과체중" : "비만";
 
     setResults({
       heightPercentile,
       weightPercentile,
       bmi: Math.round(bmi * 10) / 10,
       bmiPercentile,
-    })
-  }
+    });
+  };
 
-  const chartData = gender ? generateChartData(gender, "height") : []
-  const weightChartData = gender ? generateChartData(gender, "weight") : []
+  const chartData = gender ? generateChartData(gender, "height") : [];
+  const weightChartData = gender ? generateChartData(gender, "weight") : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -202,7 +233,9 @@ export default function GrowthCalculator() {
             <TrendingUp className="h-8 w-8 text-blue-600" />
             소아청소년 성장도표 계산기
           </h1>
-          <p className="text-gray-600">아이의 키와 몸무게가 또래와 비교해 어느 정도인지 확인해보세요</p>
+          <p className="text-gray-600">
+            아이의 키와 몸무게가 또래와 비교해 어느 정도인지 확인해보세요
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -224,17 +257,27 @@ export default function GrowthCalculator() {
                       <SelectValue placeholder="나이 선택" />
                     </SelectTrigger>
                     <SelectContent>
-                      {Array.from({ length: 16 }, (_, i) => i + 3).map((ageOption) => (
-                        <SelectItem key={ageOption} value={ageOption.toString()}>
-                          {ageOption}세
-                        </SelectItem>
-                      ))}
+                      {Array.from({ length: 16 }, (_, i) => i + 3).map(
+                        (ageOption) => (
+                          <SelectItem
+                            key={ageOption}
+                            value={ageOption.toString()}
+                          >
+                            {ageOption}세
+                          </SelectItem>
+                        )
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="gender">성별</Label>
-                  <Select value={gender} onValueChange={setGender}>
+                  <Select
+                    value={gender}
+                    onValueChange={(value) =>
+                      setGender(value as "male" | "female")
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="성별 선택" />
                     </SelectTrigger>
@@ -269,7 +312,11 @@ export default function GrowthCalculator() {
                 </div>
               </div>
 
-              <Button onClick={handleCalculate} className="w-full" disabled={!age || !gender || !height || !weight}>
+              <Button
+                onClick={handleCalculate}
+                className="w-full"
+                disabled={!age || !gender || !height || !weight}
+              >
                 백분위수 계산하기
               </Button>
             </CardContent>
@@ -282,7 +329,9 @@ export default function GrowthCalculator() {
                 <Users className="h-5 w-5" />
                 계산 결과
               </CardTitle>
-              <CardDescription>또래 아이들과 비교한 성장 백분위수</CardDescription>
+              <CardDescription>
+                또래 아이들과 비교한 성장 백분위수
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {results ? (
@@ -290,21 +339,37 @@ export default function GrowthCalculator() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-4 bg-blue-50 rounded-lg">
                       <Ruler className="h-6 w-6 mx-auto mb-2 text-blue-600" />
-                      <div className="text-sm text-gray-600 mb-1">키 백분위수</div>
-                      <Badge className={getPercentileColor(results.heightPercentile)}>{results.heightPercentile}</Badge>
+                      <div className="text-sm text-gray-600 mb-1">
+                        키 백분위수
+                      </div>
+                      <Badge
+                        className={getPercentileColor(results.heightPercentile)}
+                      >
+                        {results.heightPercentile}
+                      </Badge>
                     </div>
                     <div className="text-center p-4 bg-green-50 rounded-lg">
                       <TrendingUp className="h-6 w-6 mx-auto mb-2 text-green-600" />
-                      <div className="text-sm text-gray-600 mb-1">몸무게 백분위수</div>
-                      <Badge className={getPercentileColor(results.weightPercentile)}>{results.weightPercentile}</Badge>
+                      <div className="text-sm text-gray-600 mb-1">
+                        몸무게 백분위수
+                      </div>
+                      <Badge
+                        className={getPercentileColor(results.weightPercentile)}
+                      >
+                        {results.weightPercentile}
+                      </Badge>
                     </div>
                   </div>
 
                   <Separator />
 
                   <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <div className="text-sm text-gray-600 mb-1">BMI (체질량지수)</div>
-                    <div className="text-2xl font-bold text-purple-700">{results.bmi}</div>
+                    <div className="text-sm text-gray-600 mb-1">
+                      BMI (체질량지수)
+                    </div>
+                    <div className="text-2xl font-bold text-purple-700">
+                      {results.bmi}
+                    </div>
                     <Badge variant="outline" className="mt-1">
                       {results.bmiPercentile}
                     </Badge>
@@ -317,7 +382,9 @@ export default function GrowthCalculator() {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">정보를 입력하고 계산 버튼을 눌러주세요</div>
+                <div className="text-center py-8 text-gray-500">
+                  정보를 입력하고 계산 버튼을 눌러주세요
+                </div>
               )}
             </CardContent>
           </Card>
@@ -329,7 +396,9 @@ export default function GrowthCalculator() {
             {/* Height Chart */}
             <Card>
               <CardHeader>
-                <CardTitle>키 성장 곡선 ({gender === "male" ? "남자" : "여자"})</CardTitle>
+                <CardTitle>
+                  키 성장 곡선 ({gender === "male" ? "남자" : "여자"})
+                </CardTitle>
                 <CardDescription>나이별 키 백분위수 차트</CardDescription>
               </CardHeader>
               <CardContent>
@@ -346,15 +415,64 @@ export default function GrowthCalculator() {
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="age" label={{ value: "나이 (세)", position: "insideBottom", offset: -5 }} />
-                      <YAxis label={{ value: "키 (cm)", angle: -90, position: "insideLeft" }} />
+                      <XAxis
+                        dataKey="age"
+                        label={{
+                          value: "나이 (세)",
+                          position: "insideBottom",
+                          offset: -5,
+                        }}
+                      />
+                      <YAxis
+                        label={{
+                          value: "키 (cm)",
+                          angle: -90,
+                          position: "insideLeft",
+                        }}
+                      />
                       <ChartTooltip content={<ChartTooltipContent />} />
-                      <Line type="monotone" dataKey="p3" stroke="var(--color-p3)" strokeWidth={1} dot={false} />
-                      <Line type="monotone" dataKey="p25" stroke="var(--color-p25)" strokeWidth={1} dot={false} />
-                      <Line type="monotone" dataKey="p50" stroke="var(--color-p50)" strokeWidth={2} dot={false} />
-                      <Line type="monotone" dataKey="p75" stroke="var(--color-p75)" strokeWidth={1} dot={false} />
-                      <Line type="monotone" dataKey="p97" stroke="var(--color-p97)" strokeWidth={1} dot={false} />
-                      {age && height && <ReferenceLine x={Number.parseInt(age)} stroke="red" strokeDasharray="5 5" />}
+                      <Line
+                        type="monotone"
+                        dataKey="p3"
+                        stroke="var(--color-p3)"
+                        strokeWidth={1}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="p25"
+                        stroke="var(--color-p25)"
+                        strokeWidth={1}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="p50"
+                        stroke="var(--color-p50)"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="p75"
+                        stroke="var(--color-p75)"
+                        strokeWidth={1}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="p97"
+                        stroke="var(--color-p97)"
+                        strokeWidth={1}
+                        dot={false}
+                      />
+                      {age && height && (
+                        <ReferenceLine
+                          x={Number.parseInt(age)}
+                          stroke="red"
+                          strokeDasharray="5 5"
+                        />
+                      )}
                     </LineChart>
                   </ResponsiveContainer>
                 </ChartContainer>
@@ -364,7 +482,9 @@ export default function GrowthCalculator() {
             {/* Weight Chart */}
             <Card>
               <CardHeader>
-                <CardTitle>몸무게 성장 곡선 ({gender === "male" ? "남자" : "여자"})</CardTitle>
+                <CardTitle>
+                  몸무게 성장 곡선 ({gender === "male" ? "남자" : "여자"})
+                </CardTitle>
                 <CardDescription>나이별 몸무게 백분위수 차트</CardDescription>
               </CardHeader>
               <CardContent>
@@ -381,15 +501,64 @@ export default function GrowthCalculator() {
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={weightChartData}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="age" label={{ value: "나이 (세)", position: "insideBottom", offset: -5 }} />
-                      <YAxis label={{ value: "몸무게 (kg)", angle: -90, position: "insideLeft" }} />
+                      <XAxis
+                        dataKey="age"
+                        label={{
+                          value: "나이 (세)",
+                          position: "insideBottom",
+                          offset: -5,
+                        }}
+                      />
+                      <YAxis
+                        label={{
+                          value: "몸무게 (kg)",
+                          angle: -90,
+                          position: "insideLeft",
+                        }}
+                      />
                       <ChartTooltip content={<ChartTooltipContent />} />
-                      <Line type="monotone" dataKey="p3" stroke="var(--color-p3)" strokeWidth={1} dot={false} />
-                      <Line type="monotone" dataKey="p25" stroke="var(--color-p25)" strokeWidth={1} dot={false} />
-                      <Line type="monotone" dataKey="p50" stroke="var(--color-p50)" strokeWidth={2} dot={false} />
-                      <Line type="monotone" dataKey="p75" stroke="var(--color-p75)" strokeWidth={1} dot={false} />
-                      <Line type="monotone" dataKey="p97" stroke="var(--color-p97)" strokeWidth={1} dot={false} />
-                      {age && weight && <ReferenceLine x={Number.parseInt(age)} stroke="red" strokeDasharray="5 5" />}
+                      <Line
+                        type="monotone"
+                        dataKey="p3"
+                        stroke="var(--color-p3)"
+                        strokeWidth={1}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="p25"
+                        stroke="var(--color-p25)"
+                        strokeWidth={1}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="p50"
+                        stroke="var(--color-p50)"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="p75"
+                        stroke="var(--color-p75)"
+                        strokeWidth={1}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="p97"
+                        stroke="var(--color-p97)"
+                        strokeWidth={1}
+                        dot={false}
+                      />
+                      {age && weight && (
+                        <ReferenceLine
+                          x={Number.parseInt(age)}
+                          stroke="red"
+                          strokeDasharray="5 5"
+                        />
+                      )}
                     </LineChart>
                   </ResponsiveContainer>
                 </ChartContainer>
@@ -408,7 +577,8 @@ export default function GrowthCalculator() {
               <div>
                 <h4 className="font-semibold mb-2">백분위수란?</h4>
                 <p className="text-sm text-gray-600 mb-4">
-                  같은 나이, 같은 성별의 100명 중에서 몇 번째에 해당하는지를 나타내는 수치입니다.
+                  같은 나이, 같은 성별의 100명 중에서 몇 번째에 해당하는지를
+                  나타내는 수치입니다.
                 </p>
                 <ul className="text-sm text-gray-600 space-y-1">
                   <li>• 50th 백분위: 평균 (100명 중 50번째)</li>
@@ -419,8 +589,13 @@ export default function GrowthCalculator() {
               <div>
                 <h4 className="font-semibold mb-2">주의사항</h4>
                 <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• 이 계산기는 참고용이며, 정확한 진단은 의료진과 상담하세요</li>
-                  <li>• 3rd 백분위 미만이나 97th 백분위 초과시 전문의 상담을 권합니다</li>
+                  <li>
+                    • 이 계산기는 참고용이며, 정확한 진단은 의료진과 상담하세요
+                  </li>
+                  <li>
+                    • 3rd 백분위 미만이나 97th 백분위 초과시 전문의 상담을
+                    권합니다
+                  </li>
                   <li>• 성장은 개인차가 있으므로 지속적인 관찰이 중요합니다</li>
                 </ul>
               </div>
@@ -429,5 +604,5 @@ export default function GrowthCalculator() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
