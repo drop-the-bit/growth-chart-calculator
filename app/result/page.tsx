@@ -81,7 +81,15 @@ export default function ResultPage() {
   const weightChartData = generateChartData(gender, "weight");
 
   const handleBack = () => {
-    router.back();
+    // 이전 입력값들을 URL 파라미터로 전달하여 메인 페이지로 이동
+    const params = new URLSearchParams({
+      age,
+      gender,
+      height,
+      weight,
+    });
+
+    router.push(`/?${params.toString()}`);
   };
 
   return (

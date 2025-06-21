@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useMemo, memo } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useCallback, useMemo, memo, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -294,10 +294,24 @@ InputCard.displayName = "InputCard";
 
 export default function HomePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
+
+  // URL 파라미터에서 이전 입력값들을 읽어서 기본값으로 설정
+  useEffect(() => {
+    const prevAge = searchParams.get("age");
+    const prevGender = searchParams.get("gender");
+    const prevHeight = searchParams.get("height");
+    const prevWeight = searchParams.get("weight");
+
+    if (prevAge) setAge(prevAge);
+    if (prevGender) setGender(prevGender);
+    if (prevHeight) setHeight(prevHeight);
+    if (prevWeight) setWeight(prevWeight);
+  }, [searchParams]);
 
   // Memoize age options to prevent unnecessary re-renders
   const ageOptions = useMemo(
