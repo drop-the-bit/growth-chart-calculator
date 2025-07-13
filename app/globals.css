@@ -39,6 +39,16 @@ body {
     user-select: text;
     touch-action: manipulation; /* 입력 필드는 스크롤 허용 */
   }
+
+  /* input 포커스 시 placeholder 숨기기 */
+  input:focus::placeholder {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  input::placeholder {
+    transition: opacity 0.2s ease;
+  }
 }
 
 @layer base {

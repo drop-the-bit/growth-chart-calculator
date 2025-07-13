@@ -37,7 +37,7 @@ export const heightPercentiles = {
     17: [137.3, 143.6, 149.9, 156.2, 162.5],
     18: [138.1, 144.4, 150.7, 157.0, 163.3],
   },
-}
+};
 
 export const weightPercentiles = {
   male: {
@@ -76,82 +76,99 @@ export const weightPercentiles = {
     17: [33.5, 37.6, 42.2, 47.4, 53.2],
     18: [34.7, 39.0, 43.8, 49.3, 55.3],
   },
-}
+};
 
-export function calculatePercentile(value: number, percentiles: number[]): string {
-  if (value <= percentiles[0]) return "< 3rd"
-  if (value <= percentiles[1]) return "3rd - 25th"
-  if (value <= percentiles[2]) return "25th - 50th"
-  if (value <= percentiles[3]) return "50th - 75th"
-  if (value <= percentiles[4]) return "75th - 97th"
-  return "> 97th"
+export function calculatePercentile(
+  value: number,
+  percentiles: number[]
+): string {
+  if (value <= percentiles[0]) return "< 3rd";
+  if (value <= percentiles[1]) return "3rd - 25th";
+  if (value <= percentiles[2]) return "25th - 50th";
+  if (value <= percentiles[3]) return "50th - 75th";
+  if (value <= percentiles[4]) return "75th - 97th";
+  return "> 97th";
 }
 
 export function getPercentileColor(percentile: string): string {
   switch (percentile) {
     case "< 3rd":
-      return "bg-red-100 text-red-800 border-red-200"
+      return "bg-red-100 text-red-800 border-red-200";
     case "3rd - 25th":
-      return "bg-orange-100 text-orange-800 border-orange-200"
+      return "bg-orange-100 text-orange-800 border-orange-200";
     case "25th - 50th":
-      return "bg-yellow-100 text-yellow-800 border-yellow-200"
+      return "bg-yellow-100 text-yellow-800 border-yellow-200";
     case "50th - 75th":
-      return "bg-green-100 text-green-800 border-green-200"
+      return "bg-green-100 text-green-800 border-green-200";
     case "75th - 97th":
-      return "bg-blue-100 text-blue-800 border-blue-200"
+      return "bg-blue-100 text-blue-800 border-blue-200";
     case "> 97th":
-      return "bg-purple-100 text-purple-800 border-purple-200"
+      return "bg-purple-100 text-purple-800 border-purple-200";
     default:
-      return "bg-gray-100 text-gray-800 border-gray-200"
+      return "bg-gray-100 text-gray-800 border-gray-200";
   }
 }
 
 export function generateChartData(gender: string, type: "height" | "weight") {
-  const data = []
-  const percentileData = type === "height" ? heightPercentiles : weightPercentiles
+  const data = [];
+  const percentileData =
+    type === "height" ? heightPercentiles : weightPercentiles;
 
   for (let age = 3; age <= 18; age++) {
-    const ageData: any = { age }
+    const ageData: any = { age };
     const values =
-      percentileData[gender as keyof typeof percentileData][age as keyof (typeof percentileData)[typeof gender]]
+      percentileData[gender as keyof typeof percentileData][
+        age as keyof (typeof percentileData)[keyof typeof percentileData]
+      ];
 
     if (values) {
-      ageData.p3 = values[0]
-      ageData.p25 = values[1]
-      ageData.p50 = values[2]
-      ageData.p75 = values[3]
-      ageData.p97 = values[4]
+      ageData.p3 = values[0];
+      ageData.p25 = values[1];
+      ageData.p50 = values[2];
+      ageData.p75 = values[3];
+      ageData.p97 = values[4];
     }
 
-    data.push(ageData)
+    data.push(ageData);
   }
 
-  return data
+  return data;
 }
 
-export function generateDistributionData(percentiles: number[], currentValue: number) {
-  const data = []
-  const min = Math.min(percentiles[0] * 0.8, currentValue * 0.8)
-  const max = Math.max(percentiles[4] * 1.2, currentValue * 1.2)
+export function generateDistributionData(
+  percentiles: number[],
+  currentValue: number
+) {
+  const data = [];
+  const min = Math.min(percentiles[0] * 0.8, currentValue * 0.8);
+  const max = Math.max(percentiles[4] * 1.2, currentValue * 1.2);
 
   for (let i = 0; i <= 100; i++) {
-    const value = min + (max - min) * (i / 100)
-    let density = 0
+    const value = min + (max - min) * (i / 100);
+    let density = 0;
 
     // 정규분포 근사 계산
-    if (value <= percentiles[0]) density = 0.03
+    if (value <= percentiles[0]) density = 0.03;
     else if (value <= percentiles[1])
-      density = 0.03 + (0.22 * (value - percentiles[0])) / (percentiles[1] - percentiles[0])
+      density =
+        0.03 +
+        (0.22 * (value - percentiles[0])) / (percentiles[1] - percentiles[0]);
     else if (value <= percentiles[2])
-      density = 0.25 + (0.25 * (value - percentiles[1])) / (percentiles[2] - percentiles[1])
+      density =
+        0.25 +
+        (0.25 * (value - percentiles[1])) / (percentiles[2] - percentiles[1]);
     else if (value <= percentiles[3])
-      density = 0.5 - (0.25 * (value - percentiles[2])) / (percentiles[3] - percentiles[2])
+      density =
+        0.5 -
+        (0.25 * (value - percentiles[2])) / (percentiles[3] - percentiles[2]);
     else if (value <= percentiles[4])
-      density = 0.25 - (0.22 * (value - percentiles[3])) / (percentiles[4] - percentiles[3])
-    else density = 0.03
+      density =
+        0.25 -
+        (0.22 * (value - percentiles[3])) / (percentiles[4] - percentiles[3]);
+    else density = 0.03;
 
-    data.push({ value: Math.round(value * 10) / 10, density })
+    data.push({ value: Math.round(value * 10) / 10, density });
   }
 
-  return data
+  return data;
 }
