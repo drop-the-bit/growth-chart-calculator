@@ -91,9 +91,19 @@ export default function ResultPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={handleBack}
-              className="p-2 text-white hover:bg-sky-600 hover:text-white rounded-lg"
+              className="flex items-center gap-1 p-2 text-white hover:bg-sky-600 hover:text-white rounded-lg transition"
+              aria-label="뒤로가기"
             >
-              ← 뒤로
+              {/* SVG 아이콘 */}
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+                <path
+                  d="M15 19l-7-7 7-7"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
             <div className="flex-1 text-center">
               <h1 className="text-lg font-bold text-white">성장 분석 결과</h1>
@@ -101,6 +111,27 @@ export default function ResultPage() {
                 {gender === "male" ? "남자" : "여자"} {age}세 • {height}cm •{" "}
                 {weight}kg
               </p>
+            </div>
+            {/* 우측 placeholder 아이콘 */}
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                visibility: "hidden",
+              }}
+            >
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+                <path
+                  d="M15 19l-7-7 7-7"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
           </div>
         </div>
